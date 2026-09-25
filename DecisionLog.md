@@ -17,3 +17,10 @@
 - **What changed:** Alamofire is added as a package, "up to next major" from 5.12.2, and `Package.resolved` pins the exact version. `Podfile`, `Pods/` and `CatFacts.xcworkspace` are gone; open `CatFacts.xcodeproj`.
 - **Side benefits:** the unit-test target now resolves Alamofire without extra setup (under CocoaPods it failed to build). Moving from 5.4.1 to 5.12.2 stays within the same major version, so no API changes were needed, and it removes the iOS 15 deprecation warnings the old version produced.
 - **Link to the iOS floor:** Alamofire 5.12.2's `Package.swift` requires iOS 15 (its podspec still says iOS 10), so SPM and the iOS 15 bump go together.
+
+## App entry point: scene-based UIKit, no storyboard
+
+- **Decision:** UIKit with the scene lifecycle. `SceneDelegate` builds the window and root navigation controller in code; `Main.storyboard` and its `Info.plist` entries are removed. `LaunchScreen.storyboard` stays.
+- **Why the scene lifecycle:** Apple requires it from the release after iOS 26 when building with the latest SDK, or the app won't launch. [TN3187](https://developer.apple.com/documentation/technotes/tn3187-migrating-to-the-uikit-scene-based-life-cycle) `UIScene` exists since iOS 13, so one entry point covers iOS 15 to 27 with no `#available` checks.
+- **Why UIKit over SwiftUI:** with an iOS 15 floor, SwiftUI lacks `NavigationStack` (iOS 16) and `@Observable` (iOS 17), so I'd need the deprecated `NavigationView` or `#available` branches. The UIKit APIs this app needs (collection-view lists, diffable data sources, content configurations, `UISearchController`) all exist on iOS 15 and aren't deprecated on 27.
+- **Why no storyboard:** UI in code gives readable diffs and no XML merge conflicts, and view controllers can receive their dependencies through initializers.
