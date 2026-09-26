@@ -27,10 +27,7 @@ struct FactsUI: View {
                             }
                         }
                     }
-                    // Pull-to-refresh on a ScrollView needs iOS 16; on iOS 15 only List supports it.
-                    .refreshable {
-                        await viewModel.load()
-                    }
+                   
                     .padding(.all, 8)
                     .padding(.horizontal, 24)
                     .id(viewModel.query)
@@ -44,6 +41,9 @@ struct FactsUI: View {
                     Task { await viewModel.load() }
                 }
             }
+        } // Pull-to-refresh on a ScrollView needs iOS 16; on iOS 15 only List supports it.
+        .refreshable {
+            await viewModel.load()
         }
         .background(.background)
         .task {
