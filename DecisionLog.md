@@ -24,3 +24,11 @@
 - **Why the scene lifecycle:** Apple requires it from the release after iOS 26 when building with the latest SDK, or the app won't launch. [TN3187](https://developer.apple.com/documentation/technotes/tn3187-migrating-to-the-uikit-scene-based-life-cycle) `UIScene` exists since iOS 13, so one entry point covers iOS 15 to 27 with no `#available` checks.
 - **Why UIKit over SwiftUI:** with an iOS 15 floor, SwiftUI lacks `NavigationStack` (iOS 16) and `@Observable` (iOS 17), so I'd need the deprecated `NavigationView` or `#available` branches. The UIKit APIs this app needs (collection-view lists, diffable data sources, content configurations, `UISearchController`) all exist on iOS 15 and aren't deprecated on 27.
 - **Why no storyboard:** UI in code gives readable diffs and no XML merge conflicts, and view controllers can receive their dependencies through initializers.
+
+## Networking: Alamofire → URLSession
+
+- **Decision:** remove Alamofire and use `URLSession` directly. The project now has no third-party dependencies.
+- **Why:** the native SDK already does everything the app needs. It makes one GET request and decodes JSON, which `URLSession`'s async `data(from:)` (iOS 15) and `JSONDecoder` handle without an external dependency.
+- **What a dependency costs:** updates to track, supply-chain and security exposure, and extra build time and binary size. In an SDK, every dependency is also forced on the host app, which may already use a different version of it.
+- **What changed:** `URLSessionHTTPClient` replaces `AlamofireHTTPClient` behind the same `HTTPClient` protocol, so the repository, view model and error handling didn't change. It keeps the same checks (2xx status, `application/json` content type) and the same `NetworkError` mapping, and the existing client tests pass against it through a stub `URLProtocol`.
+- **What I give up:** Alamofire's request interceptors (retry, auth adapters), multipart uploads and upload/download progress helpers. If the app needs them later, they can go behind `HTTPClient` without touching the other layers, and any new dependency would come in through SPM (see above).

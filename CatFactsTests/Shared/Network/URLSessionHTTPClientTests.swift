@@ -1,20 +1,19 @@
-import Alamofire
 import XCTest
 @testable import CatFacts
 
-final class AlamofireHTTPClientTests: XCTestCase {
+final class URLSessionHTTPClientTests: XCTestCase {
     private struct Item: Decodable, Sendable, Equatable {
         let name: String
     }
 
     private let url = URL(string: "https://example.com/items")!
-    private var client: AlamofireHTTPClient!
+    private var client: URLSessionHTTPClient!
 
     override func setUp() {
         super.setUp()
         let configuration = URLSessionConfiguration.ephemeral
         configuration.protocolClasses = [StubURLProtocol.self]
-        client = AlamofireHTTPClient(session: Session(configuration: configuration))
+        client = URLSessionHTTPClient(session: URLSession(configuration: configuration))
     }
 
     override func tearDown() {
