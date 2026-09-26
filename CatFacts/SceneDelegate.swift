@@ -16,8 +16,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = scene as? UIWindowScene else { return }
         let window = UIWindow(windowScene: windowScene)
         let repository = RemoteCatFactsRepository(client: AlamofireHTTPClient())
-        let factsViewController = FactsViewController(viewModel: FactsViewModel(repository: repository))
-        window.rootViewController = UINavigationController(rootViewController: factsViewController)
+        let factsViewModel = FactsViewModel(repository: repository)
+        // let factsViewController = FactsViewController(viewModel: factsViewModel)
+        let factsViewController = HostingViewController(rootView: FactsUI(viewModel: factsViewModel))
+        // The wrapper owns the navigation item, so the title and search field are set here rather than in SwiftUI.
+        factsViewController.title = String(localized: "Cat Facts")
+        factsViewController.navigationItem.searchController = SearchController(
+            placeholder: String(localized: "Search facts")
+        ) { [factsViewModel] text in
+            factsViewModel.query = text
+        }
+        factsViewController.navigationItem.hidesSearchBarWhenScrolling = false
+        let navigationController = UINavigationController(rootViewController: factsViewController)
+        navigationController.navigationBar.prefersLargeTitles = true
+        window.rootViewController = navigationController
         window.makeKeyAndVisible()
         self.window = window
     }
