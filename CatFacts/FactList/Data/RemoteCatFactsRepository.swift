@@ -11,6 +11,8 @@ final class RemoteCatFactsRepository: CatFactsRepository {
         self.url = url
     }
 
+    // @concurrent: de-duplication and mapping never run on the caller's actor, even when it's the main actor.
+    @concurrent
     func fetchFacts() async throws -> [CatFact] {
         let dtos: [CatFactDTO]
         do {

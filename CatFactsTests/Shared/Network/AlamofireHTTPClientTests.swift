@@ -31,6 +31,15 @@ final class AlamofireHTTPClientTests: XCTestCase {
         XCTAssertEqual(items, [Item(name: "Tom")])
     }
 
+    @MainActor
+    func testDecodesOffTheMainThreadWhenCalledFromTheMainActor() async throws {
+        StubURLProtocol.stub = .response(status: 200, contentType: "application/json", body: "{}")
+
+        let probe: ThreadProbe = try await client.get(url, decoder: JSONDecoder())
+
+        XCTAssertFalse(probe.decodedOnMainThread)
+    }
+
     func testErrorStatusMapsToBadStatus() async {
         StubURLProtocol.stub = .response(status: 503, contentType: "application/json", body: "{}")
         await assertGetThrows(.badStatus(503))
@@ -67,6 +76,15 @@ final class AlamofireHTTPClientTests: XCTestCase {
         } catch {
             XCTAssertEqual(error as? NetworkError, expected, file: file, line: line)
         }
+    }
+}
+
+/// Records which thread decoding ran on.
+private struct ThreadProbe: Decodable, Sendable {
+    let decodedOnMainThread: Bool
+
+    init(from decoder: Decoder) throws {
+        decodedOnMainThread = pthread_main_np() != 0
     }
 }
 

@@ -26,7 +26,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         ) { [factsViewModel] text in
             factsViewModel.query = text
         }
-        factsViewController.navigationItem.hidesSearchBarWhenScrolling = false
+        factsViewController.navigationItem.hidesSearchBarWhenScrolling = true
         let navigationController = UINavigationController(rootViewController: factsViewController)
         navigationController.navigationBar.prefersLargeTitles = true
         window.rootViewController = navigationController

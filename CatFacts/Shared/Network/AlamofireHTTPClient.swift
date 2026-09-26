@@ -8,6 +8,9 @@ final class AlamofireHTTPClient: HTTPClient {
         self.session = session
     }
 
+    // Alamofire sends the request and decodes the JSON on its own background queues.
+    // @concurrent also keeps this wrapper off the caller's actor, even when the caller is the main actor.
+    @concurrent
     func get<Response: Decodable & Sendable>(_ url: URL, decoder: JSONDecoder) async throws -> Response {
         do {
             return try await session.request(url)

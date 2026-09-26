@@ -7,6 +7,7 @@ struct FactsItemView: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 8) {
       Text(fact.text)
+        .frame(maxWidth: .infinity, alignment: .leading)
       if fact.isVerified || fact.isNew {
         HStack(spacing: 8) {
           if fact.isVerified {
@@ -25,9 +26,13 @@ struct FactsItemView: View {
           }
         }
       }
-      Divider().background(.black)
+      
+      if #available(iOS 26.0, *) {
+        Divider().background(.black).opacity(0.001)
+      } else {
+        Divider().background(.black)
+      }
     }
-    .padding(.horizontal)
     .accessibilityElement(children: .combine)
   }
 }

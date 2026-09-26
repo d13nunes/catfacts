@@ -1,7 +1,7 @@
 import Combine
 import Foundation
 
-struct FactItem: Equatable, Identifiable {
+struct FactItem: Equatable, Identifiable, Sendable {
     let id: String
     let text: String
     let isVerified: Bool
@@ -56,11 +56,11 @@ final class FactsViewModel: ObservableObject {
         }
 
         do {
-            let facts = try await repository.fetchFacts()
+            // A fact is new when it was created within the last `isNewThresholdInDays` days.
+            let newSince = Calendar.current.date(byAdding: .day, value: -isNewThresholdInDays, to: now())
+            let items = try await Self.fetchItems(from: repository, newSince: newSince)
             guard !Task.isCancelled else { return }
-            state = facts.isEmpty ? .empty : .loaded(facts.map {
-                FactItem(id: $0.id, text: $0.text, isVerified: $0.isVerified, isNew: isNew($0.createdAt))
-            })
+            state = items.isEmpty ? .empty : .loaded(items)
         } catch {
             guard !Task.isCancelled else { return }
             let error = error as? CatFactsError ?? .unknown
@@ -72,12 +72,20 @@ final class FactsViewModel: ObservableObject {
         }
     }
 
-    /// Whether `date` falls within the last `isNewThresholdInDays` days.
-    private func isNew(_ date: Date) -> Bool {
-        guard let cutoff = Calendar.current.date(byAdding: .day, value: -isNewThresholdInDays, to: now()) else {
-            return false
+    /// Fetches and maps the facts off the main actor, so only the resulting state change runs on it.
+    @concurrent
+    private nonisolated static func fetchItems(
+        from repository: CatFactsRepository,
+        newSince: Date?
+    ) async throws -> [FactItem] {
+        try await repository.fetchFacts().map { fact in
+            FactItem(
+                id: fact.id,
+                text: fact.text,
+                isVerified: fact.isVerified,
+                isNew: newSince.map { fact.createdAt >= $0 } ?? false
+            )
         }
-        return date >= cutoff
     }
 
     private var hasFacts: Bool {

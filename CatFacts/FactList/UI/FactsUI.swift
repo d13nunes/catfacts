@@ -21,14 +21,18 @@ struct FactsUI: View {
                     StatusView(content: .noResults(for: viewModel.query))
                 } else {
                     ScrollView {
-                        LazyVStack {
-                          ForEach(facts, id: \.id) { fact in
+                        LazyVStack(spacing: 16) {
+                            ForEach(facts, id: \.id) { fact in
                                 FactsItemView(fact: fact)
                             }
                         }
                     }
-                    // A new identity per query starts the results at the top, instead of keeping an offset
-                    // that can sit past the end of a shorter list.
+                    // Pull-to-refresh on a ScrollView needs iOS 16; on iOS 15 only List supports it.
+                    .refreshable {
+                        await viewModel.load()
+                    }
+                    .padding(.all, 8)
+                    .padding(.horizontal, 24)
                     .id(viewModel.query)
                 }
             case .empty:
