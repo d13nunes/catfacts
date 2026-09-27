@@ -19,9 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let factsViewModel = FactsViewModel(repository: repository)
         // let factsViewController = FactsViewController(viewModel: factsViewModel)
         let factsViewController = HostingViewController(rootView: FactsUI(viewModel: factsViewModel))
-        let navigationController = UINavigationController(rootViewController: factsViewController)
-        navigationController.navigationBar.prefersLargeTitles = true
-        window.rootViewController = navigationController
+        window.rootViewController = AppNavigationController(rootViewController: factsViewController)
         window.makeKeyAndVisible()
         self.window = window
     }

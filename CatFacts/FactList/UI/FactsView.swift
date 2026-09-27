@@ -27,6 +27,7 @@ struct FactsUI: View {
                             }
                         }
                         .padding(.horizontal, 24)
+                        .padding(.vertical, 8)
                     }
                     .id(viewModel.query)
                     .navigationSearchBar(text: $viewModel.query, placeholder: "Search facts")
