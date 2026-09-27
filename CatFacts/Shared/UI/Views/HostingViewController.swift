@@ -2,16 +2,18 @@ import SwiftUI
 import UIKit
 
 /// Wraps a SwiftUI view so UIKit can push, present or embed it as a child view controller.
-/// The hosted view can reach this controller's navigation item through `\.hostingNavigationItem`.
+/// The hosted view can reach this controller's navigation item through `\.hostingNavigationItem`, and the width of its
+/// `readableContentGuide` through `\.readableContentWidth`.
 final class HostingViewController<Content: View>: UIViewController {
     var rootView: Content {
         didSet { hostingController.rootView = hostedRoot }
     }
 
     private lazy var hostingController = UIHostingController(rootView: hostedRoot)
+    private var readableContentWidth: CGFloat?
 
     private var hostedRoot: HostedRoot<Content> {
-        HostedRoot(content: rootView, navigationItem: navigationItem)
+        HostedRoot(content: rootView, navigationItem: navigationItem, readableContentWidth: readableContentWidth)
     }
 
     init(rootView: Content) {
@@ -42,15 +44,27 @@ final class HostingViewController<Content: View>: UIViewController {
         ])
         hostingController.didMove(toParent: self)
     }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        // The readable width changes with the screen size and the text size setting, so pass it on after each layout.
+        let width = view.readableContentGuide.layoutFrame.width
+        guard width != readableContentWidth else { return }
+        readableContentWidth = width
+        hostingController.rootView = hostedRoot
+    }
 }
 
-/// The hosted content, with the wrapper's navigation item in its environment.
+/// The hosted content, with the wrapper's navigation item and readable width in its environment.
 struct HostedRoot<Content: View>: View {
     let content: Content
     let navigationItem: UINavigationItem
+    var readableContentWidth: CGFloat?
 
     var body: some View {
-        content.environment(\.hostingNavigationItem, navigationItem)
+        content
+            .environment(\.hostingNavigationItem, navigationItem)
+            .environment(\.readableContentWidth, readableContentWidth)
     }
 }
 
@@ -58,10 +72,38 @@ private struct HostingNavigationItemKey: EnvironmentKey {
     static var defaultValue: UINavigationItem? { nil }
 }
 
+private struct ReadableContentWidthKey: EnvironmentKey {
+    static var defaultValue: CGFloat? { nil }
+}
+
 extension EnvironmentValues {
     /// The navigation item of the `HostingViewController` hosting this view, or nil outside one.
     var hostingNavigationItem: UINavigationItem? {
         get { self[HostingNavigationItemKey.self] }
         set { self[HostingNavigationItemKey.self] = newValue }
+    }
+
+    /// The width of the hosting `HostingViewController`'s `readableContentGuide`, or nil outside one.
+    var readableContentWidth: CGFloat? {
+        get { self[ReadableContentWidthKey.self] }
+        set { self[ReadableContentWidthKey.self] = newValue }
+    }
+}
+
+extension View {
+    /// Caps the view's width at UIKit's readable content width, for comfortable line lengths, and centres it.
+    /// SwiftUI has no `readableContentGuide`; outside a `HostingViewController` the width isn't capped.
+    func readableContentWidth() -> some View {
+        modifier(ReadableContentWidth())
+    }
+}
+
+private struct ReadableContentWidth: ViewModifier {
+    @Environment(\.readableContentWidth) private var width
+
+    func body(content: Content) -> some View {
+        content
+            .frame(maxWidth: width ?? .infinity)
+            .frame(maxWidth: .infinity)
     }
 }

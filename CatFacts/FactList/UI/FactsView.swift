@@ -26,6 +26,7 @@ struct FactsUI: View {
                                 FactsItemView(fact: fact, highlight: viewModel.query)
                             }
                         }
+                        .readableContentWidth()
                         .padding(.horizontal, 24)
                         .padding(.vertical, 8)
                     }
