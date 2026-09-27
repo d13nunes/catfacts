@@ -23,7 +23,7 @@ struct FactsUI: View {
                     ScrollView {
                         LazyVStack(spacing: 24) {
                             ForEach(facts, id: \.id) { fact in
-                                FactsItemView(fact: fact)
+                                FactsItemView(fact: fact, highlight: viewModel.query)
                             }
                         }
                         .padding(.horizontal, 24)
