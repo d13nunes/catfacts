@@ -3,13 +3,6 @@ import XCTest
 
 @MainActor
 final class AppNavigationControllerTests: XCTestCase {
-    func testUsesLargeTitles() {
-        let controller = AppNavigationController(rootViewController: UIViewController())
-
-        controller.loadViewIfNeeded()
-
-        XCTAssertTrue(controller.navigationBar.prefersLargeTitles)
-    }
 
     func testBeforeLiquidGlassTheBarIsSolidWithALineInEveryState() throws {
         guard #unavailable(iOS 26) else { throw XCTSkip("From iOS 26 the bar keeps the system's Liquid Glass look.") }

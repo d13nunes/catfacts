@@ -22,6 +22,15 @@ final class URLSessionHTTPClientTests: XCTestCase {
         super.tearDown()
     }
 
+    @MainActor
+    func testDecodesOffTheMainThreadWhenCalledFromTheMainActor() async throws {
+        StubURLProtocol.stub = .response(status: 200, contentType: "application/json", body: "{}")
+
+        let probe: ThreadProbe = try await client.get(url, decoder: JSONDecoder())
+
+        XCTAssertFalse(probe.decodedOnMainThread)
+    }
+
     func testDecodesSuccessfulJSONResponse() async throws {
         StubURLProtocol.stub = .response(status: 200, contentType: "application/json", body: #"[{"name":"Tom"}]"#)
 
@@ -30,13 +39,14 @@ final class URLSessionHTTPClientTests: XCTestCase {
         XCTAssertEqual(items, [Item(name: "Tom")])
     }
 
-    @MainActor
-    func testDecodesOffTheMainThreadWhenCalledFromTheMainActor() async throws {
-        StubURLProtocol.stub = .response(status: 200, contentType: "application/json", body: "{}")
+    func testOfflineMapsToConnection() async {
+        StubURLProtocol.stub = .failure(URLError(.notConnectedToInternet))
+        await assertGetThrows(.connection)
+    }
 
-        let probe: ThreadProbe = try await client.get(url, decoder: JSONDecoder())
-
-        XCTAssertFalse(probe.decodedOnMainThread)
+    func testTimeoutMapsToConnection() async {
+        StubURLProtocol.stub = .failure(URLError(.timedOut))
+        await assertGetThrows(.connection)
     }
 
     func testErrorStatusMapsToBadStatus() async {
@@ -54,15 +64,6 @@ final class URLSessionHTTPClientTests: XCTestCase {
         await assertGetThrows(.invalidResponse)
     }
 
-    func testOfflineMapsToConnection() async {
-        StubURLProtocol.stub = .failure(URLError(.notConnectedToInternet))
-        await assertGetThrows(.connection)
-    }
-
-    func testTimeoutMapsToConnection() async {
-        StubURLProtocol.stub = .failure(URLError(.timedOut))
-        await assertGetThrows(.connection)
-    }
 
     private func assertGetThrows(
         _ expected: NetworkError,
