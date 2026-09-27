@@ -18,7 +18,7 @@ struct FactsView: View {
             case .loaded:
                 let facts = viewModel.searchResults
                 if facts.isEmpty {
-                    StatusView(content: .noResults(for: viewModel.query))
+                    StatusView(content: viewModel.noResultsContent(for: viewModel.query))
                 } else {
                     ScrollView {
                         LazyVStack(spacing: Spacing.rowSpacing) {
@@ -38,11 +38,11 @@ struct FactsView: View {
                     .navigationSearchBar(text: $viewModel.query, placeholder: "Search facts")
                 }
             case .empty:
-                StatusView(content: StatusView.Content.empty) {
+                StatusView(content: viewModel.emptyContent) {
                     Task { await viewModel.load() }
                 }
             case .failed(let error):
-                StatusView(content: StatusView.Content.failure(error)) {
+                StatusView(content: viewModel.failureContent(error)) {
                     Task { await viewModel.load() }
                 }
             }
