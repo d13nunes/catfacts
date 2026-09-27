@@ -1,4 +1,5 @@
 import Combine
+import UIKit
 import XCTest
 @testable import CatFacts
 
@@ -90,6 +91,80 @@ final class FactsViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.state, .failed(.connection))
     }
 
+    func testReloadsWhenTheAppEntersTheForeground() async {
+        let notificationCenter = NotificationCenter()
+        let newFact = makeFact("Kittens sleep a lot.")
+        let viewModel = FactsViewModel(
+            repository: StubRepository(.success([fact]), .success([newFact])),
+            notificationCenter: notificationCenter
+        )
+        await viewModel.load()
+
+        await post(UIApplication.willEnterForegroundNotification, on: notificationCenter, reloading: viewModel)
+
+        XCTAssertEqual(viewModel.searchResults.map(\.id), [newFact.id])
+    }
+
+    func testForegroundReloadRecoversFromAnError() async {
+        let notificationCenter = NotificationCenter()
+        let viewModel = FactsViewModel(
+            repository: StubRepository(.failure(.connection), .success([fact])),
+            notificationCenter: notificationCenter
+        )
+        await viewModel.load()
+
+        await post(UIApplication.willEnterForegroundNotification, on: notificationCenter, reloading: viewModel)
+
+        XCTAssertEqual(viewModel.state, .loaded([item]))
+    }
+
+    func testForegroundReloadMarksNewFactsAgainstTheCurrentDate() async {
+        let notificationCenter = NotificationCenter()
+        let fact = makeFact("Cats purr.", createdAt: now)
+        var currentDate = now
+        let viewModel = FactsViewModel(
+            repository: StubRepository(.success([fact]), .success([fact])),
+            now: { currentDate },
+            notificationCenter: notificationCenter
+        )
+        await viewModel.load()
+        XCTAssertEqual(viewModel.searchResults.map(\.isNew), [true])
+
+        currentDate = Calendar.current.date(byAdding: .day, value: viewModel.isNewThresholdInDays + 1, to: now)!
+        await post(UIApplication.willEnterForegroundNotification, on: notificationCenter, reloading: viewModel)
+
+        XCTAssertEqual(viewModel.searchResults.map(\.isNew), [false])
+    }
+
+    func testIgnoresOtherAppLifecycleNotifications() async {
+        let notificationCenter = NotificationCenter()
+        let viewModel = FactsViewModel(
+            repository: StubRepository(.success([fact]), .success([])),
+            notificationCenter: notificationCenter
+        )
+        await viewModel.load()
+
+        for name in [
+            UIApplication.didBecomeActiveNotification,
+            UIApplication.willResignActiveNotification,
+            UIApplication.didEnterBackgroundNotification,
+        ] {
+            await post(name, on: notificationCenter, reloading: viewModel, expectsReload: false)
+        }
+
+        XCTAssertEqual(viewModel.state, .loaded([item]))
+    }
+
+    func testForegroundObserverDoesNotKeepTheViewModelAlive() {
+        let notificationCenter = NotificationCenter()
+        var viewModel: FactsViewModel? = FactsViewModel(repository: StubRepository(), notificationCenter: notificationCenter)
+        weak var weakViewModel = viewModel
+
+        viewModel = nil
+
+        XCTAssertNil(weakViewModel)
+    }
+
     func testBlankQueryShowsAllFacts() async {
         let facts = [makeFact("Cats purr."), makeFact("Kittens sleep a lot.")]
         let viewModel = FactsViewModel(repository: StubRepository(.success(facts)))
@@ -123,6 +198,25 @@ final class FactsViewModelTests: XCTestCase {
 
         viewModel.query = "kittens purr"
         XCTAssertEqual(viewModel.searchResults.map(\.id), [])
+    }
+
+    /// Posts `name` on `notificationCenter` and waits for `viewModel` to publish its reloaded state.
+    /// With `expectsReload` false, waits briefly and fails if the view model reloads.
+    private func post(
+        _ name: Notification.Name,
+        on notificationCenter: NotificationCenter,
+        reloading viewModel: FactsViewModel,
+        expectsReload: Bool = true
+    ) async {
+        let reloaded = expectation(description: "\(viewModel) reloads after \(name.rawValue)")
+        reloaded.isInverted = !expectsReload
+        // dropFirst skips the value $state emits on subscribe.
+        let subscription = viewModel.$state.dropFirst().sink { _ in reloaded.fulfill() }
+        defer { subscription.cancel() }
+
+        notificationCenter.post(name: name, object: nil)
+
+        await fulfillment(of: [reloaded], timeout: expectsReload ? 1 : 0.1)
     }
 
     private func makeFact(

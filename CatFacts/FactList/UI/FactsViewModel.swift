@@ -1,5 +1,6 @@
 import Combine
 import Foundation
+import UIKit
 
 struct FactItem: Equatable, Sendable {
     let id: String
@@ -36,11 +37,24 @@ final class FactsViewModel: ObservableObject {
     private let repository: CatFactsRepository
     private let now: () -> Date
     private var isLoading = false
+    private var cancellables = Set<AnyCancellable>()
 
-    init(repository: CatFactsRepository, isNewThresholdInDays: Int = AppConstants.newFactThresholdInDays, now: @escaping () -> Date = Date.init) {
+    init(
+        repository: CatFactsRepository,
+        isNewThresholdInDays: Int = AppConstants.newFactThresholdInDays,
+        now: @escaping () -> Date = Date.init,
+        notificationCenter: NotificationCenter = .default
+    ) {
         self.repository = repository
         self.isNewThresholdInDays = isNewThresholdInDays
         self.now = now
+        // Reload when the app comes back to the foreground, so the facts and "new" badges aren't stale.
+        notificationCenter
+            .publisher(for: UIApplication.willEnterForegroundNotification)
+            .sink { [weak self] _ in
+                Task { await self?.load() }
+            }
+            .store(in: &cancellables)
     }
 
     func load() async {
