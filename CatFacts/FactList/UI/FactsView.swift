@@ -1,5 +1,5 @@
 //
-//  FactsUI.swift
+//  FactsView.swift
 //  CatFacts
 //
 //  Created by Diogo Nunes on 26/09/2026.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct FactsUI: View {
+struct FactsView: View {
     @ObservedObject var viewModel: FactsViewModel
 
     var body: some View {
@@ -75,7 +75,7 @@ private struct FactsPreview: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
         let viewModel = FactsViewModel(repository: PreviewFactsRepository(response: response))
         viewModel.query = query
-        return AppNavigationController(rootViewController: HostingViewController(rootView: FactsUI(viewModel: viewModel)))
+        return AppNavigationController(rootViewController: HostingViewController(rootView: FactsView(viewModel: viewModel)))
     }
 
     func updateUIViewController(_ viewController: UIViewController, context: Context) {}

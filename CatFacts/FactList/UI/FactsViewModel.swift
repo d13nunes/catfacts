@@ -1,7 +1,7 @@
 import Combine
 import Foundation
 
-struct FactItem: Equatable, Identifiable, Sendable {
+struct FactItem: Equatable, Sendable {
     let id: String
     let text: String
     let isVerified: Bool

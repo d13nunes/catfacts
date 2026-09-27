@@ -17,8 +17,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         let repository = RemoteCatFactsRepository(client: URLSessionHTTPClient())
         let factsViewModel = FactsViewModel(repository: repository)
-        // let factsViewController = FactsViewController(viewModel: factsViewModel)
-        let factsViewController = HostingViewController(rootView: FactsUI(viewModel: factsViewModel))
+        let factsViewController = HostingViewController(rootView: FactsView(viewModel: factsViewModel))
         window.rootViewController = AppNavigationController(rootViewController: factsViewController)
         window.makeKeyAndVisible()
         self.window = window

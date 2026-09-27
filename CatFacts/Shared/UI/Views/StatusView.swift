@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct StatusView: View {
-    struct Content: Equatable {
+    struct Content {
         let symbolName: String
         let title: String
         let message: String

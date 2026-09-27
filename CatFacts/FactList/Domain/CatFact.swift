@@ -1,6 +1,6 @@
 import Foundation
 
-struct CatFact: Hashable, Identifiable, Sendable {
+struct CatFact: Equatable, Sendable {
     let id: String
     let text: String
     let isVerified: Bool
