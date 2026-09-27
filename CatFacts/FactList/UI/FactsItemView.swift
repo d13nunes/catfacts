@@ -58,12 +58,12 @@ struct FactsItemView: View {
   VStack {
     FactsItemView(fact: .init(
       id: "1",
-      text: "Some random fact about a cat that does cat things and people love specially in the internet",
+      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
       isVerified: true,
       isNew: true)
     )
-    FactsItemView(fact: .init(id: "2", text: "A verified fact.", isVerified: true, isNew: false))
-    FactsItemView(fact: .init(id: "3", text: "A plain fact.", isVerified: false, isNew: false))
-    FactsItemView(fact: .init(id: "4", text: "Cats sleep, and cats purr.", isVerified: false, isNew: false), highlight: "CAT purr")
+    FactsItemView(fact: .init(id: "2", text: "A verified fact. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.", isVerified: true, isNew: false))
+    FactsItemView(fact: .init(id: "3", text: "A plain fact. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.", isVerified: false, isNew: false))
+    FactsItemView(fact: .init(id: "4", text: "Cats sleep, and cats purr. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.", isVerified: false, isNew: false), highlight: "CAT purr")
   }
 }
