@@ -30,6 +30,10 @@ struct FactsView: View {
                         .padding(.horizontal, Spacing.screenMargin)
                         .padding(.vertical, Spacing.s)
                     }
+                    // A ScrollView shows pull-to-refresh from iOS 16; on iOS 15 this does nothing.
+                    .refreshable {
+                        await viewModel.refresh()
+                    }
                     .id(viewModel.query)
                     .navigationSearchBar(text: $viewModel.query, placeholder: "Search facts")
                 }
@@ -105,8 +109,10 @@ private struct PreviewFactsRepository: CatFactsRepository {
         case .failure(let error):
             throw error
         case .neverResponds:
-            try await Task.sleep(nanoseconds: .max)
-            return []
+            // Sleeps until cancelled. A single `Task.sleep(nanoseconds: .max)` overflows and returns at once.
+            while true {
+                try await Task.sleep(nanoseconds: NSEC_PER_SEC)
+            }
         }
     }
 }

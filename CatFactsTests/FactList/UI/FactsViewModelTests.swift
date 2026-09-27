@@ -158,7 +158,7 @@ final class FactsViewModelTests: XCTestCase {
     func testForegroundObserverDoesNotKeepTheViewModelAlive() {
         let notificationCenter = NotificationCenter()
         var viewModel: FactsViewModel? = FactsViewModel(repository: StubRepository(), notificationCenter: notificationCenter)
-        weak var weakViewModel = viewModel
+        weak let weakViewModel = viewModel
 
         viewModel = nil
 

@@ -58,6 +58,15 @@ final class FactsViewModel: ObservableObject {
     }
 
     func load() async {
+        await load(keepingFactsOnFailure: false)
+    }
+
+    /// Reloads the facts for pull to refresh. If the reload fails, the facts already on screen stay.
+    func refresh() async {
+        await load(keepingFactsOnFailure: true)
+    }
+
+    private func load(keepingFactsOnFailure: Bool) async {
         guard !isLoading else { return }
         isLoading = true
         defer { isLoading = false }
@@ -69,6 +78,7 @@ final class FactsViewModel: ObservableObject {
             state = items.isEmpty ? .empty : .loaded(items)
         } catch {
             guard !Task.isCancelled else { return }
+            if keepingFactsOnFailure, case .loaded = state { return }
             let error = error as? CatFactsError ?? .unknown
             state = .failed(error)
         }
