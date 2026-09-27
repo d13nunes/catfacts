@@ -16,10 +16,8 @@ struct StatusView: View {
             Image(systemName: content.symbolName)
                 .font(.largeTitle)
                 .foregroundStyle(.secondary)
-                .accessibilityHidden(true)
             Text(content.title)
                 .font(.headline)
-                .accessibilityAddTraits(.isHeader)
             Text(content.message)
                 .foregroundStyle(.secondary)
             if let actionTitle = content.actionTitle {
