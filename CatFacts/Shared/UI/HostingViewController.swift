@@ -2,17 +2,20 @@ import SwiftUI
 import UIKit
 
 /// Wraps a SwiftUI view so UIKit can push, present or embed it as a child view controller.
-/// The background is `.systemBackground`; set `view.backgroundColor = .clear` to show what's behind it.
+/// The hosted view can reach this controller's navigation item through `\.hostingNavigationItem`.
 final class HostingViewController<Content: View>: UIViewController {
     var rootView: Content {
-        get { hostingController.rootView }
-        set { hostingController.rootView = newValue }
+        didSet { hostingController.rootView = hostedRoot }
     }
 
-    private let hostingController: UIHostingController<Content>
+    private lazy var hostingController = UIHostingController(rootView: hostedRoot)
+
+    private var hostedRoot: HostedRoot<Content> {
+        HostedRoot(content: rootView, navigationItem: navigationItem)
+    }
 
     init(rootView: Content) {
-        hostingController = UIHostingController(rootView: rootView)
+        self.rootView = rootView
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -38,5 +41,27 @@ final class HostingViewController<Content: View>: UIViewController {
             hostedView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
         ])
         hostingController.didMove(toParent: self)
+    }
+}
+
+/// The hosted content, with the wrapper's navigation item in its environment.
+struct HostedRoot<Content: View>: View {
+    let content: Content
+    let navigationItem: UINavigationItem
+
+    var body: some View {
+        content.environment(\.hostingNavigationItem, navigationItem)
+    }
+}
+
+private struct HostingNavigationItemKey: EnvironmentKey {
+    static var defaultValue: UINavigationItem? { nil }
+}
+
+extension EnvironmentValues {
+    /// The navigation item of the `HostingViewController` hosting this view, or nil outside one.
+    var hostingNavigationItem: UINavigationItem? {
+        get { self[HostingNavigationItemKey.self] }
+        set { self[HostingNavigationItemKey.self] = newValue }
     }
 }

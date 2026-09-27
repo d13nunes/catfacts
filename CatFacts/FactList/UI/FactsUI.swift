@@ -26,10 +26,8 @@ struct FactsUI: View {
                                 FactsItemView(fact: fact)
                             }
                         }
+                        .padding(.horizontal, 24)
                     }
-                   
-                    .padding(.all, 8)
-                    .padding(.horizontal, 24)
                     .id(viewModel.query)
                 }
             case .empty:
@@ -41,11 +39,10 @@ struct FactsUI: View {
                     Task { await viewModel.load() }
                 }
             }
-        } // Pull-to-refresh on a ScrollView needs iOS 16; on iOS 15 only List supports it.
-        .refreshable {
-            await viewModel.load()
         }
         .background(.background)
+        .navigationItemTitle("Cat Facts")
+        .navigationSearchBar(text: $viewModel.query, placeholder: "Search facts")
         .task {
             await viewModel.load()
         }
