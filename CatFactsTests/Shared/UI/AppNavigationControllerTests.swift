@@ -20,7 +20,7 @@ final class AppNavigationControllerTests: XCTestCase {
         let bar = controller.navigationBar
         let appearances = [bar.standardAppearance, bar.compactAppearance, bar.scrollEdgeAppearance, bar.compactScrollEdgeAppearance]
         for appearance in appearances {
-            XCTAssertEqual(appearance?.backgroundColor, .white)
+            XCTAssertEqual(appearance?.backgroundColor, .systemBackground)
             XCTAssertNotNil(appearance?.shadowImage)
         }
     }

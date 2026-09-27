@@ -12,7 +12,7 @@ struct FactsItemView: View {
       // The badges are part of the text, so they lead the first line and the text wraps under them.
       (badges + Text(highlightedText))
         .frame(maxWidth: .infinity, alignment: .leading)
-      Divider().background(.black)
+      Divider().background(Color(uiColor: .separator))
     }
   }
 

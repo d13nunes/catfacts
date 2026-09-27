@@ -15,7 +15,7 @@ final class AppNavigationController: UINavigationController {
         // An appearance's background also fills the status bar area, which navigationBar.backgroundColor doesn't.
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = .white
+        appearance.backgroundColor = .systemBackground
         // A template shadow image is tinted with shadowColor, so the line follows light and dark mode.
         appearance.shadowImage = Self.makeLineImage(height: ComponentSize.separatorLine)
         appearance.shadowColor = .separator
