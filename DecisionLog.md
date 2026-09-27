@@ -32,3 +32,16 @@
 - **What a dependency costs:** updates to track, supply-chain and security exposure, and extra build time and binary size. In an SDK, every dependency is also forced on the host app, which may already use a different version of it.
 - **What changed:** `URLSessionHTTPClient` replaces `AlamofireHTTPClient` behind the same `HTTPClient` protocol, so the repository, view model and error handling didn't change. It keeps the same checks (2xx status, `application/json` content type) and the same `NetworkError` mapping, and the existing client tests pass against it through a stub `URLProtocol`.
 - **What I give up:** Alamofire's request interceptors (retry, auth adapters), multipart uploads and upload/download progress helpers. If the app needs them later, they can go behind `HTTPClient` without touching the other layers, and any new dependency would come in through SPM (see above).
+
+## Fact badges: inline, 28pt, scaled with Dynamic Type
+
+- **Decision:** Change the verified and new badges to be inline with the text.
+- **Why inline:** the badges are read before the fact, and the text keeps the full row width instead of sharing it with a column of icons. This change better hightlighs the fact tags, improving the user experience.
+- **Assets resizing:** Provided assets didn't have coherent sizes so I normalized their sizes to 28pt, by reszing 2x to 56px and 3x to 84px. Why 28? It's good size to standout without being too big compared with the text size.
+- **Scaling with the text:** I also added `@ScaledMetric`, so the badges are 28pt at the default text size and grow with Dynamic Type like the text around them. Images inside `Text` ignore `.resizable()` and `.frame`, so `UIImage.resized(to:)` (in `Shared/Utils`) redraws each badge at the scaled size.
+- **Why `UIImage` and not `Image`:** inside `Text`, an `Image` keeps its own size; only SF Symbols scale with the font. So each badge is redrawn at the scaled size as a `UIImage`, with `UIGraphicsImageRenderer`.
+- **Why tint the verified badge blue:** verified badges are usually blue, so users recognise them at a glance, but the provided image is black. It's rendered as a template, which lets it take a colour, and tinted blue. Apple deprecated `foregroundColor` in favour of `foregroundStyle`, but `foregroundStyle` on `Text` needs iOS 17 or higher, so `if #available(iOS 17.0, *)` uses it there and falls back to `foregroundColor` on iOS 15 and 16. If future versions of iOS stop using `foregroundColor` the app will continue to work.
+- **Considerations:**
+  - The provided artwork is 48px (new) and 64px (verified), so the 84px @3x images are scaled up and slightly soft, more so at larger text sizes. Sharp badges need larger or vector source art.
+  - At 28pt the badges are taller than the body text, so each fact's first line is taller than the rest.
+  - Considered using SF Symbols but there wasn't no SF Symbol for "new"

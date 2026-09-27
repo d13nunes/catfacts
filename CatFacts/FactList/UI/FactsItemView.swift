@@ -26,14 +26,14 @@ struct FactsItemView: View {
 
   private func badge(_ name: String, renderingMode: Image.TemplateRenderingMode, tint: Color? = nil) -> Text {
     guard let image = UIImage(named: name)?.resized(to: badgeSize) else { return Text(verbatim: "") }
-    var text = Text(Image(uiImage: image)
-      .renderingMode(renderingMode))
+    var text = Text(Image(uiImage: image).renderingMode(renderingMode))
     if let tint = tint {
       if #available(iOS 17.0, *) {
-          text = text.foregroundStyle(tint)
+        text = text.foregroundStyle(tint)
+      } else {
+        text = text.foregroundColor(tint)
       }
     }
-    
     return text + Text(verbatim: " ")
   }
 }

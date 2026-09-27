@@ -15,6 +15,7 @@
 		3691B250A4786E36D1340CB0 /* StatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A379CBBF99AB193B160503 /* StatusView.swift */; };
 		44E5A473BA0313F66FCB6109 /* HostingViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 409599F8C9305430F59398B7 /* HostingViewControllerTests.swift */; };
 		4A718020663825A02E7D93D5 /* CatFactsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2553B43FB8189DBCE7F74781 /* CatFactsRepository.swift */; };
+		5936C19A5416C3FC39E48A05 /* UIImage+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F3C3D7737D7F7B5F1D68B1 /* UIImage+Utils.swift */; };
 		74E11647585F62B90C1B47C3 /* URLSessionHTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613816A16FD068C91C34B0A9 /* URLSessionHTTPClient.swift */; };
 		84CC71A6739BCDCABB600B7E /* RemoteCatFactsRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23F285DDA11BDA70EFA8E3AD /* RemoteCatFactsRepositoryTests.swift */; };
 		88CFD40226136D370090B26A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88CFD40126136D370090B26A /* AppDelegate.swift */; };
@@ -76,6 +77,7 @@
 		88CFD42526136D3B0090B26A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9283E9ADA2332879ECE8D688 /* HTTPClient.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HTTPClient.swift; sourceTree = "<group>"; };
 		A142B3B40DEADF42D2F030C2 /* URLSessionHTTPClientTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = URLSessionHTTPClientTests.swift; sourceTree = "<group>"; };
+		A9F3C3D7737D7F7B5F1D68B1 /* UIImage+Utils.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "UIImage+Utils.swift"; sourceTree = "<group>"; };
 		B1512DCF88145BFDADF0B6BF /* RemoteCatFactsRepository.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RemoteCatFactsRepository.swift; sourceTree = "<group>"; };
 		C0A379CBBF99AB193B160503 /* StatusView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StatusView.swift; sourceTree = "<group>"; };
 		E8364B5E30691E5A00EDCD30 /* Facts+StatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Facts+StatusView.swift"; sourceTree = "<group>"; };
@@ -200,6 +202,14 @@
 			path = Data;
 			sourceTree = "<group>";
 		};
+		935419CDB9A9BACBB5F12546 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				A9F3C3D7737D7F7B5F1D68B1 /* UIImage+Utils.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 		94500DEA52E91E61E4B7DDE6 /* Network */ = {
 			isa = PBXGroup;
 			children = (
@@ -237,10 +247,8 @@
 		BE5E469E46A7EA6AC16B96A4 /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				C0A379CBBF99AB193B160503 /* StatusView.swift */,
-				1FC841CD350EF40EF5444C35 /* HostingViewController.swift */,
-				71093CE631B93B2C9CCD72B6 /* SearchController.swift */,
-				38E4A3348382559D6C9F6E71 /* NavigationItemModifiers.swift */,
+				935419CDB9A9BACBB5F12546 /* Utils */,
+				E8364B60306928DE00EDCD30 /* Views */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -260,6 +268,17 @@
 				92B901D7FFDAAD5D8C81C94D /* Data */,
 			);
 			path = FactList;
+			sourceTree = "<group>";
+		};
+		E8364B60306928DE00EDCD30 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				C0A379CBBF99AB193B160503 /* StatusView.swift */,
+				1FC841CD350EF40EF5444C35 /* HostingViewController.swift */,
+				71093CE631B93B2C9CCD72B6 /* SearchController.swift */,
+				38E4A3348382559D6C9F6E71 /* NavigationItemModifiers.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		E8C0385A2A149022D5BEE227 /* Data */ = {
@@ -425,6 +444,7 @@
 				1950493281676E83EDD7CB6B /* SearchController.swift in Sources */,
 				74E11647585F62B90C1B47C3 /* URLSessionHTTPClient.swift in Sources */,
 				01577EFD2A8AD00C833455D6 /* NavigationItemModifiers.swift in Sources */,
+				5936C19A5416C3FC39E48A05 /* UIImage+Utils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
