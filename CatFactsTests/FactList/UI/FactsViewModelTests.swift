@@ -72,7 +72,7 @@ final class FactsViewModelTests: XCTestCase {
         XCTAssertEqual(states, [.failed(.server), .loaded([item])])
     }
 
-    func testRefreshShowsTheNewFacts() async {
+    func testReloadShowsTheNewFacts() async {
         let newFact = makeFact("Kittens sleep a lot.")
         let viewModel = FactsViewModel(repository: StubRepository(.success([fact]), .success([newFact])))
 
@@ -82,13 +82,32 @@ final class FactsViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.searchResults.map(\.id), [newFact.id])
     }
 
-    func testFailedRefreshShowsTheError() async {
+    func testFailedReloadShowsTheError() async {
         let viewModel = FactsViewModel(repository: StubRepository(.success([fact]), .failure(.connection)))
 
         await viewModel.load()
         await viewModel.load()
 
         XCTAssertEqual(viewModel.state, .failed(.connection))
+    }
+
+    func testPullToRefreshShowsTheNewFacts() async {
+        let newFact = makeFact("Kittens sleep a lot.")
+        let viewModel = FactsViewModel(repository: StubRepository(.success([fact]), .success([newFact])))
+
+        await viewModel.load()
+        await viewModel.refresh()
+
+        XCTAssertEqual(viewModel.searchResults.map(\.id), [newFact.id])
+    }
+
+    func testFailedPullToRefreshKeepsTheFacts() async {
+        let viewModel = FactsViewModel(repository: StubRepository(.success([fact]), .failure(.connection)))
+
+        await viewModel.load()
+        await viewModel.refresh()
+
+        XCTAssertEqual(viewModel.state, .loaded([item]))
     }
 
     func testReloadsWhenTheAppEntersTheForeground() async {
