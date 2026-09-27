@@ -21,7 +21,7 @@ struct FactsUI: View {
                     StatusView(content: .noResults(for: viewModel.query))
                 } else {
                     ScrollView {
-                        LazyVStack(spacing: 16) {
+                        LazyVStack(spacing: 24) {
                             ForEach(facts, id: \.id) { fact in
                                 FactsItemView(fact: fact)
                             }
@@ -29,20 +29,20 @@ struct FactsUI: View {
                         .padding(.horizontal, 24)
                     }
                     .id(viewModel.query)
+                    .navigationSearchBar(text: $viewModel.query, placeholder: "Search facts")
                 }
             case .empty:
                 StatusView(content: StatusView.Content.empty) {
                     Task { await viewModel.load() }
                 }
-            case .failed(_):
-                StatusView(content: StatusView.Content.empty) {
+            case .failed(let error):
+                StatusView(content: StatusView.Content.failure(error)) {
                     Task { await viewModel.load() }
                 }
             }
         }
         .background(.background)
         .navigationItemTitle("Cat Facts")
-        .navigationSearchBar(text: $viewModel.query, placeholder: "Search facts")
         .task {
             await viewModel.load()
         }

@@ -19,7 +19,6 @@ final class FactsViewModel: ObservableObject {
     }
 
     @Published private(set) var state: State = .loading
-    @Published private(set) var refreshError: CatFactsError? = nil
     @Published var query = ""
 
     let isNewThresholdInDays: Int
@@ -48,13 +47,6 @@ final class FactsViewModel: ObservableObject {
         guard !isLoading else { return }
         isLoading = true
         defer { isLoading = false }
-        refreshError = nil
-
-        let isRefresh = hasFacts
-        if !isRefresh {
-            state = .loading
-        }
-
         do {
             // A fact is new when it was created within the last `isNewThresholdInDays` days.
             let newSince = Calendar.current.date(byAdding: .day, value: -isNewThresholdInDays, to: now())
@@ -64,11 +56,7 @@ final class FactsViewModel: ObservableObject {
         } catch {
             guard !Task.isCancelled else { return }
             let error = error as? CatFactsError ?? .unknown
-            if isRefresh {
-                refreshError = error
-            } else {
-                state = .failed(error)
-            }
+            state = .failed(error)
         }
     }
 
@@ -86,10 +74,5 @@ final class FactsViewModel: ObservableObject {
                 isNew: newSince.map { fact.createdAt >= $0 } ?? false
             )
         }
-    }
-
-    private var hasFacts: Bool {
-        if case .loaded = state { return true }
-        return false
     }
 }
