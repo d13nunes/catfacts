@@ -1,12 +1,10 @@
 import Foundation
 
 final class RemoteCatFactsRepository: CatFactsRepository {
-    static let endpoint = URL(string: "https://api.npoint.io/18962a8a5d00e62a8d2a")!
-
     private let client: HTTPClient
     private let url: URL
 
-    init(client: HTTPClient, url: URL = RemoteCatFactsRepository.endpoint) {
+    init(client: HTTPClient, url: URL = AppConstants.catFactsURL) {
         self.client = client
         self.url = url
     }

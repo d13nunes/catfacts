@@ -5,10 +5,10 @@ struct FactsItemView: View {
   /// Words to highlight in the fact's text, matched like the search: each word, ignoring case and diacritics.
   /// nil or blank highlights nothing.
   var highlight: String? = nil
-  @ScaledMetric(relativeTo: .body) private var badgeSize: CGFloat = 28
+  @ScaledMetric(relativeTo: .body) private var badgeSize: CGFloat = ComponentSize.badge
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 8) {
+    VStack(alignment: .leading, spacing: Spacing.s) {
       // The badges are part of the text, so they lead the first line and the text wraps under them.
       (badges + Text(highlightedText))
         .frame(maxWidth: .infinity, alignment: .leading)

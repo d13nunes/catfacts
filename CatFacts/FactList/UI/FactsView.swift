@@ -21,14 +21,14 @@ struct FactsUI: View {
                     StatusView(content: .noResults(for: viewModel.query))
                 } else {
                     ScrollView {
-                        LazyVStack(spacing: 24) {
+                        LazyVStack(spacing: Spacing.rowSpacing) {
                             ForEach(facts, id: \.id) { fact in
                                 FactsItemView(fact: fact, highlight: viewModel.query)
                             }
                         }
                         .readableContentWidth()
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 8)
+                        .padding(.horizontal, Spacing.screenMargin)
+                        .padding(.vertical, Spacing.s)
                     }
                     .id(viewModel.query)
                     .navigationSearchBar(text: $viewModel.query, placeholder: "Search facts")

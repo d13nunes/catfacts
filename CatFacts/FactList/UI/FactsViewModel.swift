@@ -37,7 +37,7 @@ final class FactsViewModel: ObservableObject {
     private let now: () -> Date
     private var isLoading = false
 
-    init(repository: CatFactsRepository, isNewThresholdInDays: Int = 90, now: @escaping () -> Date = Date.init) {
+    init(repository: CatFactsRepository, isNewThresholdInDays: Int = AppConstants.newFactThresholdInDays, now: @escaping () -> Date = Date.init) {
         self.repository = repository
         self.isNewThresholdInDays = isNewThresholdInDays
         self.now = now

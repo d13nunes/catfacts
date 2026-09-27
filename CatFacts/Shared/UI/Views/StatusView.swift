@@ -12,7 +12,7 @@ struct StatusView: View {
     var onAction: () -> Void = {}
 
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: Spacing.s) {
             Image(systemName: content.symbolName)
                 .font(.largeTitle)
                 .foregroundStyle(.secondary)
@@ -24,7 +24,7 @@ struct StatusView: View {
                 Button(actionTitle, action: onAction)
                     .buttonStyle(.borderedProminent)
                     .buttonBorderShape(.capsule)
-                    .padding(.top, 12)
+                    .padding(.top, Spacing.m)
             }
         }
         .multilineTextAlignment(.center)

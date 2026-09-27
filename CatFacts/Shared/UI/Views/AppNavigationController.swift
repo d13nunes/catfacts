@@ -17,7 +17,7 @@ final class AppNavigationController: UINavigationController {
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = .white
         // A template shadow image is tinted with shadowColor, so the line follows light and dark mode.
-        appearance.shadowImage = Self.makeLineImage(height: 1)
+        appearance.shadowImage = Self.makeLineImage(height: ComponentSize.separatorLine)
         appearance.shadowColor = .separator
         navigationBar.standardAppearance = appearance
         navigationBar.compactAppearance = appearance
