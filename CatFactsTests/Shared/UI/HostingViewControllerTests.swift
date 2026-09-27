@@ -61,6 +61,19 @@ final class HostingViewControllerTests: XCTestCase {
         XCTAssertEqual(controller.navigationItem.title, "Cat Facts")
     }
 
+    func testPassesTheReadableContentWidthToTheHostedView() throws {
+        let controller = HostingViewController(rootView: Greeting(name: "Tom"))
+        let window = try makeWindow(showing: controller)
+        defer { window.isHidden = true }
+
+        window.layoutIfNeeded()
+
+        let host = try XCTUnwrap(controller.children.first as? UIHostingController<HostedRoot<Greeting>>)
+        let readableWidth = controller.view.readableContentGuide.layoutFrame.width
+        XCTAssertGreaterThan(readableWidth, 0)
+        XCTAssertEqual(host.rootView.readableContentWidth, readableWidth)
+    }
+
     /// Runs the main run loop until `condition` holds or two seconds pass, so SwiftUI can apply its updates.
     private func waitUntil(_ condition: () -> Bool) {
         let deadline = Date().addingTimeInterval(2)

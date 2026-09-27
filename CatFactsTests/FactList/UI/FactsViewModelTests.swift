@@ -67,17 +67,27 @@ final class FactsViewModelTests: XCTestCase {
         await viewModel.load()
         await viewModel.load()
 
-        XCTAssertEqual(states, [.loading, .failed(.server), .loading, .loaded([item])])
+        // A reload keeps the current screen until its result arrives, so there's no .loading in between.
+        XCTAssertEqual(states, [.failed(.server), .loaded([item])])
     }
 
-    func testFailedRefreshKeepsFactsAndReportsError() async {
+    func testRefreshShowsTheNewFacts() async {
+        let newFact = makeFact("Kittens sleep a lot.")
+        let viewModel = FactsViewModel(repository: StubRepository(.success([fact]), .success([newFact])))
+
+        await viewModel.load()
+        await viewModel.load()
+
+        XCTAssertEqual(viewModel.searchResults.map(\.id), [newFact.id])
+    }
+
+    func testFailedRefreshShowsTheError() async {
         let viewModel = FactsViewModel(repository: StubRepository(.success([fact]), .failure(.connection)))
 
         await viewModel.load()
         await viewModel.load()
 
-        XCTAssertEqual(viewModel.state, .loaded([item]))
-        XCTAssertEqual(viewModel.refreshError, .connection)
+        XCTAssertEqual(viewModel.state, .failed(.connection))
     }
 
     func testBlankQueryShowsAllFacts() async {
