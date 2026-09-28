@@ -1,6 +1,6 @@
 # CatFacts
 
-Take-home coding exercise for Entrust (Onfido iOS SDK team): an iOS app that displays a list of facts about cats.
+Simple iOS app that displays a list of facts about cats.
 
 ![Possible outcome](screenshot.png)
 
@@ -10,11 +10,11 @@ The screenshot is a guide.
 
 ### Features
 
-- [ ] A scrollable list of facts about cats.
-- [ ] A checkbox icon on facts where the API returns `verified: true`.
-- [ ] A "new" icon on facts created within the last 90 days.
-- [ ] Unit tests.
-- [ ] A simple search box that filters facts by keyword.
+- [x] A scrollable list of facts about cats.
+- [x] A checkbox icon on facts where the API returns `verified: true`.
+- [x] A "new" icon on facts created within the last 90 days.
+- [x] Unit tests.
+- [x] A simple search box that filters facts by keyword.
 
 ### Quality expectations
 
